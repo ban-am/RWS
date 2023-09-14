@@ -3,12 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Api", "TranslationManagement.Api\TranslationManagement.Api.csproj", "{CF6B0818-2953-48BA-9036-3F75D92E0F13}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8547FBF7-7179-421B-80BD-2E293D0807A6}"
 	ProjectSection(SolutionItems) = preProject
-		.dockerignore = .dockerignore
-		TranslationManagement.Api\Dockerfile = TranslationManagement.Api\Dockerfile
 		readme.md = readme.md
 	EndProjectSection
 EndProject
@@ -16,19 +12,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.ThirdParty.Service
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleData", "SampleData", "{B01CF39A-A9B6-468F-9BC6-06D418302340}"
 	ProjectSection(SolutionItems) = preProject
+		job.json = job.json
 		job.txt = job.txt
 		job.xml = job.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{76C46BE7-B88A-47D7-80A9-F0DDC3442529}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{84A7E612-8728-4E9B-8C4C-E7A52568A3B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\Api\Api.csproj", "{84A7E612-8728-4E9B-8C4C-E7A52568A3B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "src\Domain\Shared.csproj", "{746D773C-4D0C-47A2-9404-C87E37BEA18F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Domain\Shared.csproj", "{746D773C-4D0C-47A2-9404-C87E37BEA18F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "src\Persistence\Persistence.csproj", "{3F1D2BBA-E9A2-496E-81E2-B765B5957F74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "src\Persistence\Persistence.csproj", "{3F1D2BBA-E9A2-496E-81E2-B765B5957F74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "src\Core\Core.csproj", "{A212ACC1-E9E5-43C9-AFC8-C54656AB30A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "src\Core\Core.csproj", "{A212ACC1-E9E5-43C9-AFC8-C54656AB30A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{310E7A57-8886-41DF-9522-A72E429DA7B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +35,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Release|Any CPU.Build.0 = Release|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,6 +60,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{173F3433-4139-404D-A843-BAF43F6164FA} = {310E7A57-8886-41DF-9522-A72E429DA7B3}
 		{84A7E612-8728-4E9B-8C4C-E7A52568A3B3} = {76C46BE7-B88A-47D7-80A9-F0DDC3442529}
 		{746D773C-4D0C-47A2-9404-C87E37BEA18F} = {76C46BE7-B88A-47D7-80A9-F0DDC3442529}
 		{3F1D2BBA-E9A2-496E-81E2-B765B5957F74} = {76C46BE7-B88A-47D7-80A9-F0DDC3442529}

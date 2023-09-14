@@ -35,9 +35,6 @@ public static class DependencyInjection
         services.AddScoped<ITranslationJobRepository, TranslationJobRepository>();
         services.AddScoped<ITranslatorRepository, TranslatorRepository>();
 
-        //services.AddScoped<IApplicationDbContext>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
-
-
         return services;
     }
 }
