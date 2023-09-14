@@ -28,14 +28,15 @@ public static class DependencyInjection
             m.UseSqlite(databaseSettings.ConnectionString);
         });
 
-        services.AddSingleton<ITranslationJobRepository, TranslationJobRepository>();
-        services.AddSingleton<ITranslatorRepository, TranslatorRepository>();
-
-        //services.AddScoped<IApplicationDbContext>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
-
         services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped<ApplicationDbContextInitialiser>();
+
+        services.AddScoped<ITranslationJobRepository, TranslationJobRepository>();
+        services.AddScoped<ITranslatorRepository, TranslatorRepository>();
+
+        //services.AddScoped<IApplicationDbContext>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
+
 
         return services;
     }

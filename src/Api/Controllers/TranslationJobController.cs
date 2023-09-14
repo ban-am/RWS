@@ -16,8 +16,7 @@ using System.Xml.Linq;
 namespace Api.Controllers;
 
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{api-version:apiVersion}/[controller]")]
+[Route("api/v1/[controller]")]
 public class TranslationJobController : ControllerBase
 {
     private readonly ITranslationJobRepository jobRepository;
@@ -42,14 +41,13 @@ public class TranslationJobController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([Required] string customerName, [Required] string contentToTranslate)
+    public async Task<ActionResult<int>> Create([Required] string customerName, [Required] string contentToTranslate)
     {
-        await translationJobService.CreateJob(customerName, contentToTranslate);
-        return NoContent();
+        return await translationJobService.CreateJob(customerName, contentToTranslate);
     }
 
     [HttpPost("file")]
-    public async Task<ActionResult> CreateWithFile(IFormFile file, string customerName)
+    public async Task<ActionResult<int>> CreateWithFile(IFormFile file, string customerName)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
@@ -64,115 +62,34 @@ public class TranslationJobController : ControllerBase
             using var fileStream = file.OpenReadStream();
             var result = await handler.HandleFileAsync(fileStream);
 
-            if (string.IsNullOrEmpty(result.customer) && string.IsNullOrEmpty(customerName))
-                return BadRequest($"Failed to retrieve value '{customerName}'.");
+            customerName ??= result.customer;
 
-            await translationJobService.CreateJob(result.customer ?? customerName , result.content);
+            if (string.IsNullOrEmpty(result.content))
+                return BadRequest("Failed to load 'content' value.");
+
+            if (string.IsNullOrEmpty(customerName))
+                return BadRequest("Failed to load 'customerName' value.");
+
+            return await translationJobService.CreateJob(customerName, result.content);
         }
         catch (Exception)
         {
             return BadRequest("Invalid input file.");
         }
-
-        return NoContent();
     }
 
-    [HttpPut("{id:int}/status")]
-    public async Task<ActionResult> UpdateStatus(int id, JobStatus status)
+    [HttpPut("{jobId:int}/status")]
+    public async Task<ActionResult> UpdateStatus(int jobId, JobStatus status)
     {
-        if (status == JobStatus.Unknown)
-            return BadRequest("Unknown status.");
-
         try
         {
-            await translationJobService.UpdateStatus(id, status);
+            await translationJobService.UpdateStatus(jobId, status);
+            return NoContent();
         }
-        catch (NotFoundException e)
+        catch (Exception e) when (e is InvalidOperationException || e is NotFoundException)
         {
             return BadRequest(e.Message);
         }
 
-        return NoContent();
     }
-
-
-    //    const double PricePerCharacter = 0.01;
-    //    private void SetPrice(TranslationJob job)
-    //    {
-    //        job.Price = job.OriginalContent.Length * PricePerCharacter;
-    //    }
-
-    //    [HttpPost]
-    //    public bool CreateJob(TranslationJob job)
-    //    {
-    //        job.Status = "New";
-    //        SetPrice(job);
-    //        _context.TranslationJobs.Add(job);
-    //        bool success = _context.SaveChanges() > 0;
-    //        if (success)
-    //        {
-    //            var notificationSvc = new UnreliableNotificationService();
-    //            while (!notificationSvc.SendNotification("Job created: " + job.Id).Result)
-    //            {
-    //            }
-
-    //            _logger.LogInformation("New job notification sent");
-    //        }
-
-    //        return success;
-    //    }
-
-    //    [HttpPost]
-    //    public bool CreateJobWithFile(IFormFile file, string customer)
-    //    {
-    //        var reader = new StreamReader(file.OpenReadStream());
-    //        string content;
-
-    //        if (file.FileName.EndsWith(".txt"))
-    //        {
-    //            content = reader.ReadToEnd();
-    //        }
-    //        else if (file.FileName.EndsWith(".xml"))
-    //        {
-    //            var xdoc = XDocument.Parse(reader.ReadToEnd());
-    //            content = xdoc.Root.Element("Content").Value;
-    //            customer = xdoc.Root.Element("Customer").Value.Trim();
-    //        }
-    //        else
-    //        {
-    //            throw new NotSupportedException("unsupported file");
-    //        }
-
-    //        var newJob = new TranslationJob()
-    //        {
-    //            OriginalContent = content,
-    //            TranslatedContent = "",
-    //            CustomerName = customer,
-    //        };
-
-    //        SetPrice(newJob);
-
-    //        return CreateJob(newJob);
-    //    }
-
-    //    [HttpPost]
-    //    public string UpdateJobStatus(int jobId, int translatorId, string newStatus = "")
-    //    {
-    //        _logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId.ToString() + " by translator " + translatorId);
-    //        if (typeof(JobStatuses).GetProperties().Count(prop => prop.Name == newStatus) == 0)
-    //        {
-    //            return "invalid status";
-    //        }
-    //        var job = _context.TranslationJobs.Single(j => j.Id == jobId);
-    //        bool isInvalidStatusChange = (job.Status == JobStatuses.New && newStatus == JobStatuses.Completed) ||
-    //                                     job.Status == JobStatuses.Completed || newStatus == JobStatuses.New;
-    //        if (isInvalidStatusChange)
-    //        {
-    //            return "invalid status change";
-    //        }
-
-    //        job.Status = newStatus;
-    //        _context.SaveChanges();
-    //        return "updated";
-    //    }
 }

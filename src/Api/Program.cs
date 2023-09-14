@@ -14,8 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services
-    .AddCore()
-    .AddPersistence(builder.Configuration);
+    .AddPersistence(builder.Configuration)
+    .AddCore();
 
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);

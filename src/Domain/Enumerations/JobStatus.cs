@@ -8,7 +8,6 @@ namespace Domain.Enumerations;
 
 public enum JobStatus
 {
-    Unknown = 0,
     New = 1,
     InProgress = 2,
     Completed = 3

@@ -1,6 +1,5 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using Shared.Abstraction.Repositories;
 using System.Linq.Expressions;
 
@@ -8,11 +7,11 @@ namespace Persistence.Repositories;
 
 public class TranslationJobRepository : ITranslationJobRepository
 {
-    private readonly IDbContextFactory<ApplicationDbContext> ctxFactory;
+    private readonly ApplicationDbContext ctx;
 
-    public TranslationJobRepository(IDbContextFactory<ApplicationDbContext> ctxFactory)
+    public TranslationJobRepository(ApplicationDbContext ctx)
     {
-        this.ctxFactory = ctxFactory;
+        this.ctx = ctx;
     }
 
     public async Task<List<TranslationJob>> GetJobs()
@@ -27,8 +26,6 @@ public class TranslationJobRepository : ITranslationJobRepository
 
     private IQueryable<TranslationJob> GetQuery(Expression<Func<TranslationJob, bool>> predicate)
     {
-        using var ctx = ctxFactory.CreateDbContext();
-
         var query = ctx.TranslationJobs.Select(i => i);
 
         if (predicate is not null)
@@ -39,8 +36,6 @@ public class TranslationJobRepository : ITranslationJobRepository
 
     public async Task<int> CreateJob(TranslationJob job)
     {
-        using var ctx = ctxFactory.CreateDbContext();
-
         ctx.TranslationJobs.Add(job);
 
         await ctx.SaveChangesAsync();

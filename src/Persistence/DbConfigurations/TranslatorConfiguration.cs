@@ -12,5 +12,8 @@ public class TranslatorConfiguration : IEntityTypeConfiguration<Translator>
 
         builder.Property(i => i.Id)
             .ValueGeneratedOnAdd();
+
+        builder.Property(p => p.HourlyRate)
+            .HasColumnType("decimal(18,2)");
     }
 }

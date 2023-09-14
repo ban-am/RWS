@@ -23,7 +23,7 @@ public class TranslationJobService
         this.translationJobPriceService = translationJobPriceService;
     }
 
-    public async Task CreateJob(string customerName, string contentToTranslate)
+    public async Task<int> CreateJob(string customerName, string contentToTranslate)
     {
         var jobId = await translationJobRepository.CreateJob(new TranslationJob
         {
@@ -34,6 +34,8 @@ public class TranslationJobService
         });
 
         await notificationService.SendNotification($"Job created: {jobId}");
+
+        return jobId;
     }
 
     public async Task UpdateStatus(int jobId, JobStatus status)
@@ -42,6 +44,11 @@ public class TranslationJobService
 
         if (item is null)
             throw new NotFoundException(nameof(TranslationJob), jobId);
+
+        var statusDiff = status - item.Status;
+
+        if (statusDiff < 0 || statusDiff > 1)
+            throw new InvalidOperationException("Invalid status change.");
 
         item.Status = status;
 

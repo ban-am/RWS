@@ -47,10 +47,10 @@ public class XmlFileHandler : IFileHandler
     {
         using var reader = new StreamReader(fileStream);
         var xmlContent = await reader.ReadToEndAsync();
-        var xdoc = XDocument.Parse(reader.ReadToEnd());
+        var xdoc = XDocument.Parse(xmlContent);
 
-        var content = xdoc.Root.Element("Content").Value.Trim();
-        var customer = xdoc.Root.Element("Customer").Value.Trim();
+        var content = xdoc.Root.Element("Content")?.Value.Trim();
+        var customer = xdoc.Root.Element("Customer")?.Value.Trim();
 
         return (content, customer);
     }

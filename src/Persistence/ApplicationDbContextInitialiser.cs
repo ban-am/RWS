@@ -25,19 +25,19 @@ public static class InitialiserExtensions
 public class ApplicationDbContextInitialiser
 {
     private readonly ILogger<ApplicationDbContextInitialiser> _logger;
-    private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext ctx;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext ctx)
     {
         _logger = logger;
-        _context = context;
+        this.ctx = ctx;
     }
 
     public async Task InitialiseAsync()
     {
         try
         {
-            await _context.Database.MigrateAsync();
+            await ctx.Database.MigrateAsync();
         }
         catch (Exception ex)
         {
@@ -50,7 +50,7 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-            await TrySeedAsync();
+            //await TrySeedAsync();
         }
         catch (Exception ex)
         {
@@ -59,8 +59,9 @@ public class ApplicationDbContextInitialiser
         }
     }
 
-    public async Task TrySeedAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
+    //public async Task TrySeedAsync()
+    //{
+    //    using var ctx = ctx.CreateDbContext();
+    //    await ctx.SaveChangesAsync();
+    //}
 }

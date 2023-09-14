@@ -11,7 +11,7 @@ public class TranslationJobConfiguration : IEntityTypeConfiguration<TranslationJ
         builder.HasKey(e => e.Id);
 
         builder.Property(i => i.Id)
-        .ValueGeneratedOnAdd();
+               .ValueGeneratedOnAdd();
 
         builder.HasOne(tj => tj.Translator)
                .WithMany(t => t.TranslationJobs)

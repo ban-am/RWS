@@ -7,11 +7,11 @@ namespace Persistence.Repositories;
 
 public class TranslatorRepository : ITranslatorRepository
 {
-    private readonly IDbContextFactory<ApplicationDbContext> ctxFactory;
+    private readonly ApplicationDbContext ctx;
 
-    public TranslatorRepository(IDbContextFactory<ApplicationDbContext> ctxFactory)
+    public TranslatorRepository(ApplicationDbContext ctx)
     {
-        this.ctxFactory = ctxFactory;
+        this.ctx = ctx;
     }
 
     public async Task<List<Translator>> GetAll()
@@ -19,9 +19,11 @@ public class TranslatorRepository : ITranslatorRepository
         return await GetQuery(null).ToListAsync();
     }
 
-    public async Task<Translator> GetByName(string name)
+    public async Task<List<Translator>> GetAllByName(string name)
     {
-        return await GetQuery(i => i.Name == name).FirstOrDefaultAsync();
+        var items = await GetQuery(null).ToListAsync();
+
+        return items.Where(i => i.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
     public async Task<Translator> GetById(int id)
@@ -31,8 +33,6 @@ public class TranslatorRepository : ITranslatorRepository
 
     private IQueryable<Translator> GetQuery(Expression<Func<Translator, bool>> predicate)
     {
-        using var ctx = ctxFactory.CreateDbContext();
-
         var query = ctx.Translators.Select(i => i);
 
         if (predicate is not null)
@@ -43,8 +43,6 @@ public class TranslatorRepository : ITranslatorRepository
 
     public async Task<int> Create(Translator translator)
     {
-        using var ctx = ctxFactory.CreateDbContext();
-
         ctx.Translators.Add(translator);
 
         await ctx.SaveChangesAsync();

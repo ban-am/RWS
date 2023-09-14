@@ -48,7 +48,7 @@ namespace TranslationManagement.Api.Controlers
             _context.Translators.Add(translator);
             return _context.SaveChanges() > 0;
         }
-        
+
         [HttpPost]
         public string UpdateTranslatorStatus(int Translator, string newStatus = "")
         {

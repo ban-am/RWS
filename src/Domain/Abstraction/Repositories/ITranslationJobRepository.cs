@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Shared.ApiModels.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,6 @@ public interface ITranslatorRepository
 {
     Task<int> Create(Translator translator);
     Task<Translator> GetById(int id);
-    Task<Translator> GetByName(string name);
+    Task<List<Translator>> GetAllByName(string name);
     Task<List<Translator>> GetAll();
 }

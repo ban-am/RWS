@@ -21,10 +21,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
-        services.AddSingleton<TranslatorService>();
-        services.AddSingleton<TranslationJobService>();
-        services.AddSingleton<TranslationJobPriceService>();
-        services.AddSingleton<UnreliableNotificationService>();
+        services.AddScoped<TranslatorService>();
+        services.AddScoped<TranslationJobService>();
+        services.AddScoped<TranslationJobPriceService>();
+        services.AddScoped<UnreliableNotificationService>();
 
         services.AddSingleton<FileHandlerFactory>();
 

@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Abstraction.Repositories;
 using Shared.ApiModels;
 using Shared.ApiModels.Dtos;
+using Shared.Exceptions;
 using System.Data;
 
 namespace Api.Controllers;
 
 [ApiController]
-[ApiVersion("1.0")]
-[Route("api/v{api-version:apiVersion}/[controller]")]
+[Route("api/v1/[controller]")]
 public class TranslatorController : ControllerBase
 {
     private readonly ITranslatorRepository translatorRepository;
@@ -31,18 +31,18 @@ public class TranslatorController : ControllerBase
     {
         var items = await translatorRepository.GetAll();
 
-        return Ok(items.Select(mapper.Map<TranslatorDto>).ToList());
+        return Ok(mapper.Map<List<TranslatorDto>>(items));
     }
 
-    [HttpGet("byName")]
-    public async Task<ActionResult<TranslatorDto>> GetTranslatorByName(string name)
+    [HttpGet("search")]
+    public async Task<ActionResult<List<TranslatorDto>>> GetTranslatorsByName(string name)
     {
-        var item = await translatorRepository.GetByName(name);
+        var items = await translatorRepository.GetAllByName(name);
 
-        if (item is null)
+        if (items is null)
             return NoContent();
 
-        return Ok(mapper.Map<TranslatorDto>(item));
+        return Ok(mapper.Map<List<TranslatorDto>>(items));
     }
 
     [HttpPost]
@@ -59,13 +59,32 @@ public class TranslatorController : ControllerBase
         return Ok(translatorId);
     }
 
-    [HttpPut("{id:int}/status")]
-    public async Task<ActionResult> UpdateStatus(int id, TranslatorStatus status)
+    [HttpPut("{translatorId:int}/status")]
+    public async Task<ActionResult> UpdateStatus(int translatorId, TranslatorStatus status)
     {
-        if (status == TranslatorStatus.Unknown)
-            return BadRequest("Unknown status.");
+        try
+        {
+            await translatorService.UpdateStatus(translatorId, status);
+        }
+        catch (NotFoundException e)
+        {
+            return BadRequest(e.Message);
+        }
 
-        await translatorService.UpdateStatus(id, status);
+        return NoContent();
+    }
+
+    [HttpPut("{translatorId:int}/job")]
+    public async Task<ActionResult> AssignJob(int translatorId, int jobId)
+    {
+        try
+        {
+            await translatorService.AssignJob(translatorId, jobId);
+        }
+        catch (NotFoundException e)
+        {
+            return BadRequest(e.Message);
+        }
 
         return NoContent();
     }
