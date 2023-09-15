@@ -14,4 +14,7 @@ wwwroot_node
 .vscode
 *.code-workspace
 *.nupkg
+*.db-shm
+*.db-wal
+*.nupkg
 .DS_Store

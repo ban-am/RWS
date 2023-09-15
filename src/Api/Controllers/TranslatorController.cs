@@ -5,7 +5,7 @@ using Domain.Enumerations;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstraction.Repositories;
 using Shared.ApiModels;
-using Shared.ApiModels.Dtos;
+using Shared.ApiModels.Dtos.Translators;
 using Shared.Exceptions;
 using System.Data;
 
@@ -45,6 +45,17 @@ public class TranslatorController : ControllerBase
         return Ok(mapper.Map<List<TranslatorDto>>(items));
     }
 
+    [HttpGet("{translatorId:int}")]
+    public async Task<ActionResult<TranslatorDetailDto>> GetTranslatorDetail(int translatorId)
+    {
+        var items = await translatorRepository.GetById(translatorId);
+
+        if (items is null)
+            return NoContent();
+
+        return Ok(mapper.Map<TranslatorDetailDto>(items));
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> AddTranslator([FromBody] CreateTranslatorCommand model)
     {
@@ -59,12 +70,27 @@ public class TranslatorController : ControllerBase
         return Ok(translatorId);
     }
 
-    [HttpPut("{translatorId:int}/status")]
-    public async Task<ActionResult> UpdateStatus(int translatorId, TranslatorStatus status)
+    [HttpPut("{translatorId:int}/approve")]
+    public async Task<ActionResult> Approve(int translatorId)
     {
         try
         {
-            await translatorService.UpdateStatus(translatorId, status);
+            await translatorService.Approve(translatorId);
+        }
+        catch (NotFoundException e)
+        {
+            return BadRequest(e.Message);
+        }
+
+        return NoContent();
+    }
+
+    [HttpDelete("{translatorId:int}")]
+    public async Task<ActionResult> Delete(int translatorId)
+    {
+        try
+        {
+            await translatorService.Delete(translatorId);
         }
         catch (NotFoundException e)
         {
@@ -81,7 +107,7 @@ public class TranslatorController : ControllerBase
         {
             await translatorService.AssignJob(translatorId, jobId);
         }
-        catch (NotFoundException e)
+        catch (Exception e) when (e is NotFoundException || e is InvalidOperationException)
         {
             return BadRequest(e.Message);
         }

@@ -20,11 +20,21 @@ public class TranslatorService
         this.unitOfWork = unitOfWork;
     }
 
-    public async Task UpdateStatus(int translatorId, TranslatorStatus status)
+    public async Task Approve(int translatorId)
+    {
+        await UpdateStatus(translatorId, TranslatorStatus.Certified);
+    }
+
+    public async Task Delete(int translatorId)
+    {
+        await UpdateStatus(translatorId, TranslatorStatus.Deleted);
+    }
+
+    private async Task UpdateStatus(int translatorId, TranslatorStatus status)
     {
         var item = await translatorRepository.GetById(translatorId);
 
-        if (item is null)
+        if (item is null || item.Status == TranslatorStatus.Deleted)
             throw new NotFoundException(nameof(Translator), translatorId);
 
         item.Status = status;
@@ -38,6 +48,9 @@ public class TranslatorService
 
         if (translator is null)
             throw new NotFoundException(nameof(Translator), translatorId);
+
+        if (translator.Status != TranslatorStatus.Certified)
+            throw new InvalidOperationException("Only Certified translators can work on jobs.");
 
         var job = await translationJobRepository.GetById(jobId);
 

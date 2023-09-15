@@ -21,7 +21,9 @@ public class TranslationJobRepository : ITranslationJobRepository
 
     public async Task<TranslationJob> GetById(int id)
     {
-        return await GetQuery(i => i.Id == id).FirstOrDefaultAsync();
+        return await GetQuery(i => i.Id == id)
+            .Include(i => i.Translator)
+            .FirstOrDefaultAsync();
     }
 
     private IQueryable<TranslationJob> GetQuery(Expression<Func<TranslationJob, bool>> predicate)

@@ -1,6 +1,6 @@
 ﻿using Domain.Enumerations;
 
-namespace Shared.ApiModels.Dtos;
+namespace Shared.ApiModels.Dtos.Translators;
 
 public class TranslatorDto
 {

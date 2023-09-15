@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
 
@@ -51,8 +52,8 @@ public class IntegrationTest : IDisposable, IClassFixture<WebApplicationFactory<
 
     public void Dispose()
     {
-        //_dbContext.Dependents.ExecuteDelete();
-        //_dbContext.Employees.ExecuteDelete();
+        _dbContext.TranslationJobs.ExecuteDelete();
+        _dbContext.Translators.ExecuteDelete();
         _scope.Dispose();
         HttpClient.Dispose();
     }

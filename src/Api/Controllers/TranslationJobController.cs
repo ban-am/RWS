@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstraction.Repositories;
 using Shared.ApiModels;
-using Shared.ApiModels.Dtos;
+using Shared.ApiModels.Dtos.TranslationJobs;
 using Shared.Exceptions;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
@@ -36,8 +36,14 @@ public class TranslationJobController : ControllerBase
     public async Task<ActionResult<List<TranslationJobDto>>> GetAll()
     {
         var items = await jobRepository.GetJobs();
+        return Ok(mapper.Map<List<TranslationJobDto>>(items));
+    }
 
-        return Ok(items.Select(mapper.Map<TranslationJobDto>).ToList());
+    [HttpGet("{jobId:int}")]
+    public async Task<ActionResult<TranslationJobDetailDto>> GetById(int jobId)
+    {
+        var item = await jobRepository.GetById(jobId);
+        return Ok(mapper.Map<TranslationJobDetailDto>(item));
     }
 
     [HttpPost]
@@ -72,7 +78,7 @@ public class TranslationJobController : ControllerBase
 
             return await translationJobService.CreateJob(customerName, result.content);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             return BadRequest("Invalid input file.");
         }

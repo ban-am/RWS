@@ -28,12 +28,14 @@ public class TranslatorRepository : ITranslatorRepository
 
     public async Task<Translator> GetById(int id)
     {
-        return await GetQuery(i => i.Id == id).FirstOrDefaultAsync();
+        return await GetQuery(i => i.Id == id)
+            .Include(i => i.TranslationJobs)
+            .FirstOrDefaultAsync();
     }
 
     private IQueryable<Translator> GetQuery(Expression<Func<Translator, bool>> predicate)
     {
-        var query = ctx.Translators.Select(i => i);
+        var query = ctx.Translators.Where(i => i.Status != Domain.Enumerations.TranslatorStatus.Deleted);
 
         if (predicate is not null)
             query = query.Where(predicate);
