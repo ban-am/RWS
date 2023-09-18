@@ -51,7 +51,7 @@ public class TranslatorController : ControllerBase
         var items = await translatorRepository.GetById(translatorId);
 
         if (items is null)
-            return NoContent();
+            return NotFound($"Entity \"{nameof(Translator)}\" ({translatorId}) was not found.");
 
         return Ok(mapper.Map<TranslatorDetailDto>(items));
     }
@@ -79,7 +79,7 @@ public class TranslatorController : ControllerBase
         }
         catch (NotFoundException e)
         {
-            return BadRequest(e.Message);
+            return NotFound(e.Message);
         }
 
         return NoContent();
@@ -94,7 +94,7 @@ public class TranslatorController : ControllerBase
         }
         catch (NotFoundException e)
         {
-            return BadRequest(e.Message);
+            return NotFound(e.Message);
         }
 
         return NoContent();
@@ -107,7 +107,11 @@ public class TranslatorController : ControllerBase
         {
             await translatorService.AssignJob(translatorId, jobId);
         }
-        catch (Exception e) when (e is NotFoundException || e is InvalidOperationException)
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (InvalidOperationException e)
         {
             return BadRequest(e.Message);
         }

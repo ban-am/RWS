@@ -36,7 +36,6 @@ public class TxtFileHandler : IFileHandler
     {
         using var reader = new StreamReader(fileStream);
         var content = await reader.ReadToEndAsync();
-        // Handle text file specific logic here
         return (content, null);
     }
 }
@@ -67,8 +66,6 @@ public class JsonFileHandler : IFileHandler
 
         var content = token.Value<string>("content");
         var customer = token.Value<string>("customer");
-
-        // Handle JSON content here as needed
         return (content, customer);
     }
 }

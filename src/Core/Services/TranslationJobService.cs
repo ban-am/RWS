@@ -12,10 +12,10 @@ public class TranslationJobService
 {
     private readonly ITranslationJobRepository translationJobRepository;
     private readonly IUnitOfWork unitOfWork;
-    private readonly UnreliableNotificationService notificationService;
-    private readonly TranslationJobPriceService translationJobPriceService;
+    private readonly NotificationService notificationService;
+    private readonly TranslationJobPriceCalculatorService translationJobPriceService;
 
-    public TranslationJobService(ITranslationJobRepository translationJobRepository, IUnitOfWork unitOfWork, UnreliableNotificationService notificationService, TranslationJobPriceService translationJobPriceService)
+    public TranslationJobService(ITranslationJobRepository translationJobRepository, IUnitOfWork unitOfWork, NotificationService notificationService, TranslationJobPriceCalculatorService translationJobPriceService)
     {
         this.translationJobRepository = translationJobRepository;
         this.unitOfWork = unitOfWork;
@@ -33,7 +33,7 @@ public class TranslationJobService
             Price = translationJobPriceService.Calculate(contentToTranslate),
         });
 
-        await notificationService.SendNotification($"Job created: {jobId}");
+        _ = notificationService.Notify($"Job created: {jobId}");
 
         return jobId;
     }

@@ -1,60 +1,33 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
 
 namespace Api.Tests;
 
-public class IntegrationTest : IDisposable, IClassFixture<WebApplicationFactory<Program>>
+public abstract class IntegrationTest : IDisposable, IClassFixture<CustomWebApplicationFactory>
 {
-    private HttpClient? _httpClient;
-    private readonly IServiceScope _scope;
-    protected readonly WebApplicationFactory<Program> _factory;
-    //protected readonly IDependentService _dependentService;
-    protected readonly ApplicationDbContext _dbContext;
-    protected readonly IMapper _mapper;
+    protected HttpClient httpClient;
+    protected static IServiceScopeFactory scopeFactory;
+    protected readonly IServiceScope scope;
+    protected readonly CustomWebApplicationFactory factory;
+    protected readonly ApplicationDbContext dbContext;
+    protected readonly IMapper mapper;
 
-    public IntegrationTest(WebApplicationFactory<Program> factory)
+    public IntegrationTest(CustomWebApplicationFactory factory)
     {
-        _factory = factory;
-        _httpClient = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false,
-            BaseAddress = new Uri("https://localhost:7124")
-        });
-        _httpClient.DefaultRequestHeaders.Add("accept", "text/plain");
-
-        _scope = factory.Services.CreateScope();
-        //_dependentService = _scope.ServiceProvider.GetRequiredService<IDependentService>();
-        _mapper = _scope.ServiceProvider.GetRequiredService<IMapper>();
-        _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        _dbContext.Database.EnsureCreated();
-    }
-
-    protected HttpClient HttpClient
-    {
-        get
-        {
-            if (_httpClient == default)
-            {
-                _httpClient = _factory.CreateClient(new WebApplicationFactoryClientOptions
-                {
-                    AllowAutoRedirect = false,
-                    BaseAddress = new Uri("https://localhost:7124")
-                });
-                _httpClient.DefaultRequestHeaders.Add("accept", "text/plain");
-            }
-
-            return _httpClient;
-        }
+        this.factory = factory;
+        httpClient = factory.CreateClient();
+        scope = factory.Services.CreateScope();
+        scopeFactory = scope.ServiceProvider.GetService<IServiceScopeFactory>();
+        dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     }
 
     public void Dispose()
     {
-        _dbContext.TranslationJobs.ExecuteDelete();
-        _dbContext.Translators.ExecuteDelete();
-        _scope.Dispose();
-        HttpClient.Dispose();
+        dbContext.TranslationJobs.ExecuteDelete();
+        dbContext.Translators.ExecuteDelete();
+        scope.Dispose();
+        httpClient.Dispose();
     }
 }

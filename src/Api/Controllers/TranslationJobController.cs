@@ -3,15 +3,11 @@ using Core.Handlers;
 using Core.Services;
 using Domain.Entities;
 using Domain.Enumerations;
-using External.ThirdParty.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shared.Abstraction.Repositories;
-using Shared.ApiModels;
 using Shared.ApiModels.Dtos.TranslationJobs;
 using Shared.Exceptions;
 using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 
 namespace Api.Controllers;
 
@@ -43,6 +39,10 @@ public class TranslationJobController : ControllerBase
     public async Task<ActionResult<TranslationJobDetailDto>> GetById(int jobId)
     {
         var item = await jobRepository.GetById(jobId);
+
+        if (item is null)
+            return NotFound($"Entity \"{nameof(TranslationJob)}\" ({jobId}) was not found.");
+
         return Ok(mapper.Map<TranslationJobDetailDto>(item));
     }
 
@@ -63,10 +63,12 @@ public class TranslationJobController : ControllerBase
         if (!fileHandlerFactory.TryCreateHandler(fileType, out var handler))
             return BadRequest("Unsupported file type.");
 
+        (string content, string customer) result = default;
+
         try
         {
             using var fileStream = file.OpenReadStream();
-            var result = await handler.HandleFileAsync(fileStream);
+            result = await handler.HandleFileAsync(fileStream);
 
             customerName ??= result.customer;
 
@@ -75,13 +77,13 @@ public class TranslationJobController : ControllerBase
 
             if (string.IsNullOrEmpty(customerName))
                 return BadRequest("Failed to load 'customerName' value.");
-
-            return await translationJobService.CreateJob(customerName, result.content);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return BadRequest("Invalid input file.");
         }
+
+        return await translationJobService.CreateJob(customerName, result.content);
     }
 
     [HttpPut("{jobId:int}/status")]
@@ -92,7 +94,11 @@ public class TranslationJobController : ControllerBase
             await translationJobService.UpdateStatus(jobId, status);
             return NoContent();
         }
-        catch (Exception e) when (e is InvalidOperationException || e is NotFoundException)
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (InvalidOperationException e)
         {
             return BadRequest(e.Message);
         }

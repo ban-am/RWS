@@ -3,13 +3,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Persistence;
-using System.Data.Common;
 
-namespace Api.Tests;
+namespace Application.IntegrationTests;
 
-public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+internal class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -26,22 +24,14 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         builder.ConfigureServices((builder, services) =>
         {
             services.Remove<DbContextOptions<ApplicationDbContext>>();
-            services.Remove<DbConnection>();
-
-            var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
-
-            services.AddDbContext<ApplicationDbContext>((container, options) =>
+            services.AddDbContext<ApplicationDbContext>((sp, options) =>
             {
-                options.UseSqlite(connectionString);
+                var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
+                options.UseSqlite(connectionString, b =>
+                {
+                    b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                });
             });
-            var sp = services.BuildServiceProvider();
-
-            using (var scope = sp.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-                db.Database.EnsureCreated();
-            }
         });
     }
 }
