@@ -1,8 +1,10 @@
+using Api.Configurations;
 using AutoMapper;
 using Core.Handlers;
 using Core.Services;
 using Domain.Entities;
 using Domain.Enumerations;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstraction.Repositories;
 using Shared.ApiModels.Dtos.TranslationJobs;
@@ -13,6 +15,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[EnableCors(EnableCors.AllowAllHeaders)]
 public class TranslationJobController : ControllerBase
 {
     private readonly ITranslationJobRepository jobRepository;

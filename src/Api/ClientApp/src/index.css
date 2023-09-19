@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f4f4;
+}
+
+.section {
+  width: 80%;
+  margin: 20px auto;
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  position: relative;
+}
+
+.section-header {
+  position: absolute;
+  top: -15px;
+  left: 0px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+tr:hover {
+  background-color: #f4f4f4;
+}
+
+
+.attributes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row.flex-end {
+  justify-content: flex-end;
+}
+
+.w-100p {
+  width: 100%;
+}
+
+.w-150 {
+  width: 150px;
+}
+
+.w-400 {
+  width: 400px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+.flex-1 {
+  flex: 1;
+}

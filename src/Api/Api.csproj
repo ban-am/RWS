@@ -3,10 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>7ae28511-1ec8-4f71-8662-266369d2683a</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
-    <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
+	<SpaRoot>ClientApp\</SpaRoot>
+	<DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <!--<Nullable>enable</Nullable>-->
   </PropertyGroup>
 
@@ -17,6 +15,11 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+        <PackageReference Include="NSwag.AspNetCore" Version="13.20.0" />
+        <PackageReference Include="NSwag.MSBuild" Version="13.20.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.10">
 		    <PrivateAssets>all</PrivateAssets>
@@ -30,4 +33,27 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
+
+	<ItemGroup>
+		<Content Remove="$(SpaRoot)**" />
+		<None Remove="$(SpaRoot)**" />
+		<None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+		<None Include="ClientApp\package-lock.json" />
+		<None Include="ClientApp\package.json" />
+		<None Include="ClientApp\public\manifest.json" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="ClientApp\src\api\" />
+	</ItemGroup>
+
+	<Target Name="NSwag" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Debug" Command="$(NSwagExe_Net70) run Configurations/clientApi.nswag /variables:Configuration=$(Configuration),RuntimeIdentifier=$(RuntimeIdentifier),OutDir=$(OutDir),MSBuildProjectDirectory=$(MSBuildProjectDirectory),SecondVariable=true">
+			<Output TaskParameter="ExitCode" PropertyName="NSwagExitCode" />
+			<Output TaskParameter="ConsoleOutput" PropertyName="NSwagOutput" />
+		</Exec>
+		<Message Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' == '0'" Importance="low" />
+		<Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
+	</Target>
 </Project>

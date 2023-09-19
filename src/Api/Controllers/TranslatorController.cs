@@ -1,7 +1,9 @@
+using Api.Configurations;
 using AutoMapper;
 using Core.Services;
 using Domain.Entities;
 using Domain.Enumerations;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstraction.Repositories;
 using Shared.ApiModels;
@@ -13,6 +15,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[EnableCors(EnableCors.AllowAllHeaders)]
 public class TranslatorController : ControllerBase
 {
     private readonly ITranslatorRepository translatorRepository;
@@ -27,7 +30,7 @@ public class TranslatorController : ControllerBase
     }
 
     [HttpGet("list")]
-    public async Task<ActionResult<List<TranslatorDto>>> GetTranslators()
+    public async Task<ActionResult<List<TranslatorDto>>> GetAll()
     {
         var items = await translatorRepository.GetAll();
 
@@ -35,7 +38,7 @@ public class TranslatorController : ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<List<TranslatorDto>>> GetTranslatorsByName(string name)
+    public async Task<ActionResult<List<TranslatorDto>>> SearchByName(string name)
     {
         var items = await translatorRepository.GetAllByName(name);
 
@@ -46,7 +49,7 @@ public class TranslatorController : ControllerBase
     }
 
     [HttpGet("{translatorId:int}")]
-    public async Task<ActionResult<TranslatorDetailDto>> GetTranslatorDetail(int translatorId)
+    public async Task<ActionResult<TranslatorDetailDto>> GetById(int translatorId)
     {
         var items = await translatorRepository.GetById(translatorId);
 
@@ -57,7 +60,7 @@ public class TranslatorController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> AddTranslator([FromBody] CreateTranslatorCommand model)
+    public async Task<ActionResult<int>> Add([FromBody] CreateTranslatorCommand model)
     {
         var translatorId = await translatorRepository.Create(new Translator
         {
